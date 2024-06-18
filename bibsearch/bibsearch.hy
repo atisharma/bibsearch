@@ -97,7 +97,7 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
     f"# {(:title fields)}
 
 Author: {(:authors fields authors)}
-ISsued: {issued}
+Issued: {issued}
 Publisher: {(:publisher fields "")}
 
 [DOI](https://doi.org/{doi})
