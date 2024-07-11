@@ -101,4 +101,8 @@ Issued: {issued}
 Publisher: {(:publisher fields "")}
 
 [DOI](https://doi.org/{doi})
+
+## Abstract
+
+{abstract}
 "))
