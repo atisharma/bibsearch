@@ -10,6 +10,9 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
 (import habanero [Crossref])
 
 
+(defclass BibsearchError [Exception])
+
+
 (defn works [query * [email None] [year None] [dois None] [limit 20] [fields None]]
   "Search for publication from general bibliographic data."
   (let [default-fields ["DOI" "title" "type" "page" "prefix" "volume" "issue" "author" "container-title" "ISSN" "subject" "issued" "publisher" "publisher-location" "URL"]
@@ -39,7 +42,7 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
                                 :headers {"Accept" "application/x-bibtex; charset=utf-8"})]  
     (if (= 200 response.status-code)
       (.decode response.content "utf-8")
-      (raise f"Bibtex retrieval for {doi} failed, error {response.status-code}"))))
+      (raise (BibsearchError f"Bibtex retrieval for {doi} failed, error {response.status-code}")))))
 
 (defn doi-to-json [oi]
   "Return a json summary from a DOI."
@@ -47,7 +50,7 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
                                 :headers {"Accept" "application/citeproc+json; charset=utf-8"})  
         fields (if (= 200 response.status-code)
                  (.json response)
-                 (raise f"JSON retrieval for {doi} failed, error {response.status-code}"))
+                 (raise (BibsearchError f"JSON retrieval for {doi} failed, error {response.status-code}")))
         authors (.join "; " (lfor n (:author fields) f"{(:family n)}, {(:given n)}"))]
     (setv (get fields "authors") authors)
     (json.dumps fields :indent 4)))
@@ -58,7 +61,7 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
                                 :headers {"Accept" "text/x-bibliography; charset=utf-8"})]  
     (if (= 200 response.status-code)
       (.decode response.content "utf-8")
-      (raise f"Bibliography retrieval for {doi} failed, error {response.status-code}"))))
+      (raise (BibsearchError f"Bibliography retrieval for {doi} failed, error {response.status-code}")))))
 
 (defn doi-to-bash [doi]
   "Return bash script setting bash variables from a DOI.
@@ -67,7 +70,7 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
                                 :headers {"Accept" "application/citeproc+json; charset=utf-8"})  
         fields (if (= 200 response.status-code)
                  (.json response)
-                 (raise f"JSON retrieval for {doi} failed, error {response.status-code}"))
+                 (raise (BibsearchError f"JSON retrieval for {doi} failed, error {response.status-code}")))
         authors (.join "; " (lfor n (:author fields) f"{(:family n)}, {(:given n)}"))
         ymd (get fields "issued" "date-parts" 0) ; some fields (m, d) may be missing
         issued (.strftime
@@ -86,7 +89,7 @@ Use the crossref API and doi.org API to get bibliographic details and/or bibtex.
                                 :headers {"Accept" "application/citeproc+json; charset=utf-8"})  
         fields (if (= 200 response.status-code)
                  (.json response)
-                 (raise f"JSON retrieval for {doi} failed, error {response.status-code}"))
+                 (raise (BibsearchError f"JSON retrieval for {doi} failed, error {response.status-code}")))
         authors (.join "; " (lfor n (:author fields) f"{(:family n)}, {(:given n)}"))
         ymd (get fields "issued" "date-parts" 0) ; some fields (m, d) may be missing
         abstract (:abstract fields None)
