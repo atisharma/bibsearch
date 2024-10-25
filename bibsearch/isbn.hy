@@ -14,7 +14,9 @@ Use ISBN via google's books API to get bibliographic details.
   "Return a dict from an ISBN, however the API provides it."
   (let [response (requests.get f"https://www.googleapis.com/books/v1/volumes?q=isbn:{isbn}")
         fields (if (= 200 response.status-code)
-                 (:volumeInfo (get (:items (.json response)) 0))
+                 (if (:totalItems (.json response))
+                   (:volumeInfo (get (:items (.json response)) 0))
+                   (raise (ISBNError f"No results for {isbn} with Google Books API.")))
                  (raise (ISBNError f"JSON retrieval for {isbn} failed, error {response.status-code}")))]
     fields))
 
