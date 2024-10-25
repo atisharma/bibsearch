@@ -4,7 +4,7 @@ import argparse
 
 from bibsearch.bibsearch import works, search_to_bibtex
 from bibsearch.doi import doi_to_bibtex, doi_to_bash, doi_to_json, doi_to_text, doi_to_markdown
-from bibsearch.isbn import isbn_to_bibtex, isbndoi_to_bash, isbndoi_to_json, isbndoi_to_text, isbndoi_to_markdown
+from bibsearch.isbn import isbn_to_bibtex, isbn_to_bash, isbn_to_json, isbn_to_text, isbn_to_markdown
 
 
 def bib_search():
