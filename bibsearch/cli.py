@@ -2,7 +2,9 @@ import hy
 import sys
 import argparse
 
-from bibsearch.bibsearch import works, search_to_bibtex, doi_to_bibtex, doi_to_bash, doi_to_json, doi_to_text, doi_to_markdown
+from bibsearch.bibsearch import works, search_to_bibtex
+from bibsearch.doi import doi_to_bibtex, doi_to_bash, doi_to_json, doi_to_text, doi_to_markdown
+from bibsearch.isbn import isbn_to_bibtex, isbndoi_to_bash, isbndoi_to_json, isbndoi_to_text, isbndoi_to_markdown
 
 
 def bib_search():
@@ -33,6 +35,25 @@ def doi_search():
         print(doi_to_text(args.doi))
     else:
         print(doi_to_bibtex(args.doi))
+
+def isbn_search():
+    parser = argparse.ArgumentParser(description="Get a bibliography entry from an ISBN.")
+    parser.add_argument("isbn", type=str)
+    parser.add_argument("--bibtex", "-x", action=argparse.BooleanOptionalAction, default=True, help="Output as bibtex." )
+    parser.add_argument("--bash", "-b", action=argparse.BooleanOptionalAction, default=False, help="Output as bash script." )
+    parser.add_argument("--json", "-j", action=argparse.BooleanOptionalAction, default=False, help="Output as json." )
+    parser.add_argument("--markdown", "-m", action=argparse.BooleanOptionalAction, default=False, help="Output as markdown." )
+    args = parser.parse_args()
+    if args.json:
+        print(isbn_to_json(args.isbn))
+    if args.markdown:
+        print(isbn_to_markdown(args.isbn))
+    elif args.bash:
+        print(isbn_to_bash(args.isbn))
+    elif args.text:
+        print(isbn_to_text(args.isbn))
+    else:
+        print(isbn_to_bibtex(args.isbn))
 
 def arxiv_search():
     parser = argparse.ArgumentParser(description="Get a bibliography entry from a DOI.")
